@@ -10,5 +10,7 @@ import com.example.alunos.domain.model.Materia;
 
 public interface MateriaRepository extends JpaRepository<Materia, Long>{
         List<Materia> findByAluno(Aluno aluno);
+
+        
     }
 

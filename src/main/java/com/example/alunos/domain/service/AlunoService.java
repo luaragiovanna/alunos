@@ -54,6 +54,7 @@ public class AlunoService implements ICRUDService<AlunoRequestDTO, AlunoResponse
         // encriptografar senha
         String senha = passwordEncoder.encode(aluno.getSenha());
         aluno.setSenha(senha);
+        
         aluno.setId(null);
         aluno.setDataCadastro(new Date());
         aluno = alunoRepository.save(aluno);

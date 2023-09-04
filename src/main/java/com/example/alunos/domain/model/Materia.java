@@ -29,7 +29,7 @@ public class Materia {
     @Column(nullable = false)
     private int cargaHoraria;
 
-    @Column(name = "data_inicio", nullable = false)
+    @Column(name = "data_inicio")
     private Date dataInicio;
 
     @Column(name = "data_fim")
