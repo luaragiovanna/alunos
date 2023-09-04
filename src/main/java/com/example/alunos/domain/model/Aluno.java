@@ -8,22 +8,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.alunos.domain.Enum.EalunoGenero;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+
 @Entity
-public class Aluno implements UserDetails{
- 
-      
+public class Aluno implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "alunoId")
+    @Column(name = "idAluno")
     private Long id;
     private String nome;
     @Column(nullable = false, unique = true)
@@ -32,9 +31,38 @@ public class Aluno implements UserDetails{
     private String senha;
     @Column(nullable = false)
     private Date dataCadastro;
+    
     private Date dataInativacao;
     private EalunoGenero genero;
-    
+    private String curso;
+    private String nomeFaculdade;
+
+    @OneToMany(mappedBy = "aluno")
+    private List<Materia> materias;
+
+    public List<Materia> getMaterias() {
+        return materias;
+    }
+
+    public void setMaterias(List<Materia> materias) {
+        this.materias = materias;
+    }
+
+    public String getCurso() {
+        return curso;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
+
+    public String getNomeFaculdade() {
+        return nomeFaculdade;
+    }
+
+    public void setNomeFaculdade(String nomeFaculdade) {
+        this.nomeFaculdade = nomeFaculdade;
+    }
 
     public EalunoGenero getGenero() {
         return genero;
@@ -43,15 +71,6 @@ public class Aluno implements UserDetails{
     public void setGenero(EalunoGenero genero) {
         this.genero = genero;
     }
-
-    @ManyToMany
-    @JoinTable(
-        name = "aluno_materia",
-        joinColumns = @JoinColumn(name = "aluno_id"),
-        inverseJoinColumns = @JoinColumn(name = "materia_id")
-    )
-    
-    private List<Materia> materias;
 
     public Long getId() {
         return id;
@@ -101,42 +120,46 @@ public class Aluno implements UserDetails{
         this.dataInativacao = dataInativacao;
     }
 
-    public List<Materia> getMaterias() {
-        return materias;
-    }
-
-    public void setMaterias(List<Materia> materias) {
-        this.materias = materias;
-    }
-
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       return null;
+        return null;
     }
+
     @Override
+    @JsonIgnore
     public String getPassword() {
         return senha;
     }
+
     @Override
+    @JsonIgnore
     public String getUsername() {
         return RA;
     }
+
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    @Override
-    public boolean isEnabled() {
-       return true;
-    }
 
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

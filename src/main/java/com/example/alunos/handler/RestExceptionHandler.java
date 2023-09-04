@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.alunos.common.ConversorData;
@@ -11,6 +12,7 @@ import com.example.alunos.domain.exception.BadRequestException;
 import com.example.alunos.domain.exception.NotFoundException;
 import com.example.alunos.domain.model.ErroResposta;
 
+@ControllerAdvice
 public class RestExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErroResposta> handlerResourceNotFoundExecption(NotFoundException ex){

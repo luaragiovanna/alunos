@@ -11,7 +11,26 @@ public class AlunoRequestDTO {
     private String senha;
 
     private EalunoGenero genero;
+    
+    private String curso;
+    private String nomeFaculdade;
    
+    public String getCurso() {
+        return curso;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
+
+    public String getNomeFaculdade() {
+        return nomeFaculdade;
+    }
+
+    public void setNomeFaculdade(String nomeFaculdade) {
+        this.nomeFaculdade = nomeFaculdade;
+    }
+
     public String getNome() {
         return nome;
     }

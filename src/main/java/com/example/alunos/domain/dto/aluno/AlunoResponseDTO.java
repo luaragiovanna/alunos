@@ -7,14 +7,31 @@ import com.example.alunos.domain.Enum.EalunoGenero;
 public class AlunoResponseDTO {
 
     private Long id;
-     private String RA;
+    private String RA;
     private String nome;
     private EalunoGenero genero;
     private String senha;
     private Date dataCadastro;
     private Date dataInativacao;
-    
+    private String curso;
+    private String nomeFaculdade;
    
+
+    public String getCurso() {
+        return curso;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
+
+    public String getNomeFaculdade() {
+        return nomeFaculdade;
+    }
+
+    public void setNomeFaculdade(String nomeFaculdade) {
+        this.nomeFaculdade = nomeFaculdade;
+    }
 
     public String getRA() {
         return RA;

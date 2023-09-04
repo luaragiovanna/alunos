@@ -1,31 +1,45 @@
 package com.example.alunos.domain.model;
 
-import java.util.List;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "materia")
 public class Materia {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "materia_id")
+    @Column(name = "idMateria")
     private Long id;
 
     @Column(nullable = false)
     private String nome;
 
-    @ManyToMany(mappedBy = "materias")
-    private List<Aluno> alunos;
+    @ManyToOne
+    @JoinColumn(name = "idAluno")
+    private Aluno aluno;
 
+    @Column(nullable = false)
     private int cargaHoraria;
-    private int professor;
-    private int credito;
+
+    @Column(name = "data_inicio", nullable = false)
+    private Date dataInicio;
+
+    @Column(name = "data_fim")
+    private Date dataFim;
+    
+    @Column(nullable = false)
+    private String codigo;
+
+    @Column(nullable = false)
+    private String departamento;
 
     public Long getId() {
         return id;
@@ -43,12 +57,12 @@ public class Materia {
         this.nome = nome;
     }
 
-    public List<Aluno> getAlunos() {
-        return alunos;
+    public Aluno getAluno() {
+        return aluno;
     }
 
-    public void setAlunos(List<Aluno> alunos) {
-        this.alunos = alunos;
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
     }
 
     public int getCargaHoraria() {
@@ -59,19 +73,48 @@ public class Materia {
         this.cargaHoraria = cargaHoraria;
     }
 
-    public int getProfessor() {
+    public Date getDataInicio() {
+        return dataInicio;
+    }
+
+    public void setDataInicio(Date dataInicio) {
+        this.dataInicio = dataInicio;
+    }
+
+    public Date getDataFim() {
+        return dataFim;
+    }
+
+    public void setDataFim(Date dataFim) {
+        this.dataFim = dataFim;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    public String getProfessor() {
         return professor;
     }
 
-    public void setProfessor(int professor) {
+    public void setProfessor(String professor) {
         this.professor = professor;
     }
 
-    public int getCredito() {
-        return credito;
-    }
+    @Column(nullable = false)
+    private String professor;
 
-    public void setCredito(int credito) {
-        this.credito = credito;
-    }
+   
 }

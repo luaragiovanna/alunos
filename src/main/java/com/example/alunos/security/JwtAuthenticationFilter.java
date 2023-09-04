@@ -26,8 +26,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
     private AuthenticationManager authenticationManager;
+    
     private JwtUtil jwtUtil;
-  
+    //@Autowired
+    //private ModelMapper mapper;
 
     public JwtAuthenticationFilter (AuthenticationManager authenticationManager, JwtUtil jwtUtil){
         super();
@@ -37,22 +39,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
 
-      @Override
-      public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
-        try{
-            LoginRequestDTO login = new ObjectMapper().readValue(request.getInputStream(),LoginRequestDTO.class);
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(login.getRA(), login.getSenha());
-            Authentication auth = authenticationManager.authenticate(authToken);
-            return auth;
-
-        }catch(BadCredentialsException e){
-            throw new BadCredentialsException("RA ou SENHA invalidos");
-
-        }catch(Exception e){
-            throw new InternalAuthenticationServiceException(e.getMessage());
-
-        }
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
+      //qm faz a autenticacao
+      //primeiro try mapper transforma em login o q vem na request
+      //cria token da utenticacao email e senha
+      //manda autenticar token
+      //se n dar certo(1= usuario senha invalido; 2= erro que nao pode ser tratado)
+     try{
+          LoginRequestDTO login = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDTO.class);
+          UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(login.getRA(), login.getSenha());
+          Authentication auth = authenticationManager.authenticate(authToken);
+          return auth;
+      }catch(BadCredentialsException e){//nao compativeis cm credenciais
+          throw new BadCredentialsException("ra ou senha Invalidos");
+      }catch(Exception e){//nao tem como tratar erro
+          throw new InternalAuthenticationServiceException(e.getMessage());
       }
+  }
+    
 
 
     @Override
@@ -61,12 +66,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Aluno aluno = (Aluno) authResult.getPrincipal();
         String token = jwtUtil.gerarToken(authResult);
         AlunoResponseDTO alunoResponseDTO = new AlunoResponseDTO();
+        alunoResponseDTO.setId(aluno.getId());
         alunoResponseDTO.setNome(aluno.getNome());
         alunoResponseDTO.setGenero(aluno.getGenero());
         alunoResponseDTO.setDataCadastro(aluno.getDataCadastro());
         alunoResponseDTO.setDataInativacao(aluno.getDataInativacao());
+        //mapear o token
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
-        loginResponseDTO.setToken("Bearer"+ token);
+        loginResponseDTO.setToken("Bearer " + token);
         loginResponseDTO.setAluno(alunoResponseDTO);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");

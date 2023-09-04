@@ -38,7 +38,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.headers().frameOptions().disable().and().cors().and().csrf().disable().authorizeHttpRequests((auth) -> auth.requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll().anyRequest().authenticated()).sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.headers().frameOptions().disable().and().cors().and().csrf().disable().authorizeHttpRequests((auth) -> auth.requestMatchers(HttpMethod.POST, "/api/alunos").permitAll().anyRequest().authenticated()).sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilter(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil));
         http.addFilter(new JwtAutorizationFilter(authenticationManager(authenticationConfiguration), jwtUtil, userDetailsSecurityServer));
         //unica request autorizada é o cadastrar (sem logar) 

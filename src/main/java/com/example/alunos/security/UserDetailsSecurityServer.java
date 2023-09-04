@@ -19,7 +19,7 @@ public class UserDetailsSecurityServer implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String ra) throws UsernameNotFoundException {
-       Optional<Aluno> optAluno = alunoRepository.findByRA(ra); //consegue buscar usuario por emil
+       Optional<Aluno> optAluno = alunoRepository.findByRA(ra); //consegue buscar usuario por ra
        if(optAluno.isEmpty()){
         throw new UsernameNotFoundException("RA ou senha Inválidos.");//caso volte vazio
        }

@@ -18,13 +18,11 @@ import com.example.alunos.domain.model.Aluno;
 import com.example.alunos.domain.repository.AlunoRepository;
 
 @Service
-public class AlunoService implements ICRUDService<AlunoResponseDTO, AlunoRequestDTO> {
-
+public class AlunoService implements ICRUDService<AlunoRequestDTO, AlunoResponseDTO> {
     @Autowired
     private AlunoRepository alunoRepository;
     @Autowired
     private ModelMapper mapper;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -32,70 +30,65 @@ public class AlunoService implements ICRUDService<AlunoResponseDTO, AlunoRequest
     public List<AlunoResponseDTO> obterTodos() {
         List<Aluno> alunos = alunoRepository.findAll();
         return alunos.stream().map(aluno -> mapper.map(aluno, AlunoResponseDTO.class)).collect(Collectors.toList());
-
     }
 
     @Override
     public AlunoResponseDTO obterPorId(Long id) {
         Optional<Aluno> optAluno = alunoRepository.findById(id);
         if (optAluno.isEmpty()) {
-            throw new NotFoundException("Este ID nao existe" + id);
+            throw new NotFoundException("Aluno não encontrado com o id " + id);
         }
-
         return mapper.map(optAluno.get(), AlunoResponseDTO.class);
     }
+
+    @Override
+    public AlunoResponseDTO cadastrar(AlunoRequestDTO dto) {
+        if (dto.getRA() == null || dto.getSenha() == null) {
+            throw new BadRequestException("Email e Senha são Obrigatórios!");
+        }
+        Optional<Aluno> optAluno = alunoRepository.findByRA(dto.getRA());
+        if (optAluno.isPresent()) {
+            throw new BadRequestException("Já existe um aluno cadastrado com esse RA: " + dto.getRA());
+        }
+        Aluno aluno = mapper.map(dto, Aluno.class);
+        // encriptografar senha
+        String senha = passwordEncoder.encode(aluno.getSenha());
+        aluno.setSenha(senha);
+        aluno.setId(null);
+        aluno.setDataCadastro(new Date());
+        aluno = alunoRepository.save(aluno);
+        return mapper.map(aluno, AlunoResponseDTO.class);
+    }
+
+    @Override
+public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
+    AlunoResponseDTO alunoBanco = obterPorId(id);
+    if (dto.getRA() == null || dto.getSenha() == null) {
+        throw new BadRequestException("RA e Senha são Obrigatórios!");
+    }
+    
+    Aluno aluno = mapper.map(dto, Aluno.class);
+    
+    // Encriptar a nova senha antes de salvar
+    String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+    aluno.setSenha(senhaCriptografada);
+    
+    aluno.setId(id);
+    aluno.setDataInativacao(alunoBanco.getDataInativacao());
+    aluno.setDataCadastro(alunoBanco.getDataCadastro());
+    aluno = alunoRepository.save(aluno);
+    return mapper.map(aluno, AlunoResponseDTO.class);
+}
+
 
     @Override
     public void deletar(Long id) {
         Optional<Aluno> optAluno = alunoRepository.findById(id);
         if (optAluno.isEmpty()) {
-            throw new NotFoundException("Este ID não foi encontrado" + id);
+            throw new NotFoundException("Não foi possível encontrar o aluno com id: " + id);
         }
         Aluno aluno = optAluno.get();
         aluno.setDataInativacao(new Date());
         alunoRepository.save(aluno);
     }
-
-    @Override
-    public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
-        AlunoResponseDTO alunoResponseDTO = obterPorId(id);
-        
-        if(dto.getRA() == null || dto.getSenha() == null){
-            throw new BadRequestException("RA e senha são obrigatorios");
-        }
-        //transformar usuariorequest em usuario da model
-        Aluno aluno = mapper.map(dto, Aluno.class);
-        aluno.setSenha(dto.getSenha());
-        aluno.setDataInativacao(alunoResponseDTO.getDataInativacao());
-        aluno.setDataCadastro(alunoResponseDTO.getDataCadastro());
-        aluno.setId(id); //cria novo usuario mas com id diferente
-        aluno.setDataCadastro(alunoResponseDTO.getDataCadastro());
-        aluno.setDataInativacao(alunoResponseDTO.getDataInativacao());
-        
-        
-        aluno = alunoRepository.save(aluno); //salva
-        return mapper.map(aluno, AlunoResponseDTO.class);
-    }
-
-    @Override
-    public AlunoResponseDTO cadastrar(AlunoRequestDTO dto) {
-
-        if (dto.getSenha() == null || dto.getRA() == null) {
-            throw new BadRequestException("CAMPOS OBRIGATORIOS: RA E SENHA");
-
-        }
-        Optional<Aluno> aluOptional = alunoRepository.findByRA(dto.getRA());
-        if (aluOptional.isPresent()) {
-            throw new BadRequestException("Já existe um usuário cadastrado com esse RA: " + dto.getRA());
-        }
-        Aluno aluno = mapper.map(dto, Aluno.class);
-        String senha = passwordEncoder.encode(aluno.getSenha());
-        aluno.setSenha(senha);
-        aluno.setDataCadastro(new Date());
-        aluno.setId(null);
-        aluno = alunoRepository.save(aluno);
-        return mapper.map(aluno, AlunoResponseDTO.class);
-
-    }
-
 }

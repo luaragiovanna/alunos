@@ -22,13 +22,13 @@ public class JwtUtil {
     private Long jwtExpirationMilliseg;
     
 
-    public String gerarToken(Authentication authenticateAction){
+    public String gerarToken(Authentication authentication){
         Date dataExpiracao = new Date(new Date().getTime() + jwtExpirationMilliseg);
-        Aluno aluno = (Aluno) authenticateAction.getPrincipal();
+        Aluno aluno = (Aluno) authentication.getPrincipal();
         try{
              Key secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes("UTF-8"));  
 
-             return Jwts.builder().setSubject(aluno.getUsername()).setIssuedAt(new Date()).setExpiration(dataExpiracao).signWith(secretKey).compact();
+             return Jwts.builder().setSubject(aluno.getRA()).setIssuedAt(new Date()).setExpiration(dataExpiracao).signWith(secretKey).compact();
 
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -36,7 +36,7 @@ public class JwtUtil {
         return " ";
     }
 
-    private Claims getClaims(String token){
+    private Claims getClaims(String token){ //desmembrar token
         try{
             Key secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes("UTF-8"));
             Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
@@ -46,22 +46,28 @@ public class JwtUtil {
             return null;
         }
     }
+
+    public String getRAJwtUtil(String token){
+        Claims claims = getClaims(token); //ja recebe token quebrado
+        if(claims == null){
+            return null;
+        }
+        return claims.getSubject(); //pra dar get username Q foi mudado para ra
+    };
+    
     public boolean isValidToken(String token){
         Claims claims = getClaims(token);
         if(claims == null){
             return false;
         }
-        String email = claims.getSubject();
+        String ra = claims.getSubject();
         Date dataExpiracao = claims.getExpiration();
         Date agora = new Date(System.currentTimeMillis());
-        if(email != null && agora.before(dataExpiracao)){
+        if(ra != null && agora.before(dataExpiracao)){
             return true;
         }
         return false;
     }
 
-    public String getRA(String token) {
-        return null;
-    }
 
 }
